@@ -1,14 +1,16 @@
-# An Approved Refund deletes the enrollment
+# An Approved Refund deletes the Enrollment, not the Progress History
 
-When a Support Team Member approves a Refund Request, we end the learner's access by deleting their enrollment for that course, rather than keeping the enrollment and making every access check also ask "has this Purchase been Refunded?". Access is resolved in one place (`app/lib/access.server.ts`) from the enrollment alone, and we wanted Refunds to need no change there and leave no way for a forgotten check to grant access after a Refund.
+When a Support Team Member approves a Refund, the learner is un-enrolled: we delete their Enrollment row for that course. We do **not** delete or change any of their Progress History. If they enroll again later, by buying again or by claiming a Seat, they get a new Enrollment and all of their earlier Progress History is there again.
+
+This works because the Enrollment and the Progress History are stored separately. Access is decided from the Enrollment alone (`app/lib/access.server.ts`). Every piece of Progress History is stored against the learner and the lesson or course (`lesson_progress`, `video_watch_events`, `quiz_attempts`, `comments`, `course_ratings`, all keyed by `userId`), never against the Enrollment. So removing the Enrollment removes access and nothing else.
 
 ## Considered Options
 
-- **Delete the enrollment (chosen).** Access logic stays unchanged; buying again simply creates a fresh enrollment.
-- **Keep the enrollment, gate access on the Purchase's Refund status.** Preserves the row, but every path that reads enrollments (access, dashboards, instructor student lists, enrollment counts) would need to learn about Refunds.
+- **Delete the Enrollment (chosen).** Access logic stays unchanged, and a forgotten check can't let a refunded learner back in.
+- **Keep the Enrollment and gate access on the Purchase's Refund status.** This keeps the row, but every reader of enrollments (access, dashboard, course list, instructor student lists, enrollment counts) would have to learn about Refunds.
 
 ## Consequences
 
-- The enrollment's `completedAt` is lost. This is acceptable because a Refund keeps the learner's progress history, which lives in `lesson_progress` and `video_watch_events`, both untouched; completion can be re-derived from them.
-- Enrollment counts for a course drop when a Refund is approved.
-- A Refund removes only the enrollment the refunded Purchase granted. Team licence Purchases grant no enrollment to the buyer (seats are enrolled on redemption), and team licence Refunds are out of scope today.
+- `enrollments.completedAt` is lost with the row. Today the app never writes this column (only the seed data does), so in practice nothing is lost. If course-level completion is ever recorded on the Enrollment, it must move to a learner-keyed table or be derived from `lesson_progress`, or a Refund will erase it.
+- A course's enrollment count drops when a Refund is approved.
+- A Refund deletes only the Enrollment its Purchase granted. A Team Licence grants its buyer no Enrollment, and Team Licence Refunds are out of scope today.
