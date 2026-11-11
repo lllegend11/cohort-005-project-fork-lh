@@ -19,8 +19,12 @@ A Purchase of a number of Seats in a course, made by a Team Admin for other peop
 _Avoid_: Team purchase, bulk purchase, group licence
 
 **Seat**:
-One person's place in a course within a Team Licence. It is unclaimed until someone claims it, which gives them an Enrollment. Whoever claims a Seat pays nothing and owns no Purchase.
+One person's place in a course within a Team Licence. It is unclaimed until someone claims it, which gives them an Enrollment. Whoever claims a Seat pays nothing and owns no Purchase. While its Team Licence has a Refund Request that is Requested, an unclaimed Seat cannot be claimed. If the Refund is Approved, the Seat ends; if the Request is Declined, it can be claimed again.
 _Avoid_: Coupon, code, voucher (those suggest a discount)
+
+**Seat Price**:
+What one Seat in a Team Licence cost: the amount paid for the Team Licence divided by its number of Seats.
+_Avoid_: Unit price, per-seat cost
 
 **Team Admin**:
 The person who bought a Team Licence and hands out its Seats.
@@ -37,27 +41,27 @@ _Avoid_: Enrollment progress
 ### Money back
 
 **Refund**:
-A learner's money for a Purchase given back in full through Cadence, at the learner's request and with approval from a Support Team Member. It ends the Purchase and the Enrollment that Purchase granted, but not the learner's Progress History. There are no partial Refunds, and no money back that leaves access in place. A Team Licence can only be Refunded while none of its Seats are claimed, even by the Team Admin, and its Refund ends all of them. Someone who claimed a Seat paid nothing, so can never get a Refund. Out of scope: Cadence does not support Refunds of Team Licences today.
+A buyer's money for a Purchase given back through Cadence, at the buyer's request and with approval from a Support Team Member. Money is only ever given back in full for what it bought, and never while access remains. It never touches anyone's Progress History. For an Individual Purchase it gives back the whole amount paid and ends the Purchase and the Enrollment it granted. For a Team Licence it gives back the Seat Price of each unclaimed Seat, and those Seats end; claimed Seats, including one claimed by the Team Admin, keep their access and are not Refunded. Someone who claimed a Seat paid nothing, so can never get a Refund.
 _Avoid_: Cancellation, reversal, money back, partial refund
 
 **Refund Request**:
-A learner's ask for a Refund on one of their Purchases. It is Requested until a Support Team Member reviews it, then either Approved (which produces a Refund) or Declined (which changes nothing). It is judged as it stood when raised. A Purchase gets at most one Refund Request, so a Decline is final. A Support Team Member may not review their own Refund Request.
+A buyer's ask for a Refund on one of their Purchases: a learner on an Individual Purchase, or a Team Admin on a Team Licence. It is Requested until a Support Team Member reviews it, then either Approved (which produces a Refund) or Declined (which changes nothing). It is judged as it stood when raised. A Purchase gets at most one Refund Request, so a Decline is final. A Support Team Member may not review their own Refund Request.
 _Avoid_: Refund (for the ask itself), cancellation request, reversal request
 
 **Request Reason**:
-The learner's own words, given when raising a Refund Request, on why they want a Refund.
+The buyer's own words, given when raising a Refund Request, on why they want a Refund.
 _Avoid_: Reason (on its own), note
 
 **Decline Note**:
-A Support Team Member's explanation, sent to the learner, of why a Refund Request was Declined. Every Decline has one; an Approval does not.
+A Support Team Member's explanation, sent to the buyer, of why a Refund Request was Declined. Every Decline has one; an Approval does not.
 _Avoid_: Reason (on its own), decline reason, rejection message
 
 **Refund Window**:
-The period in which a learner may raise a Refund Request: from the day of the Purchase through the fourteenth calendar day after it, with that last day included in full.
+The period in which a buyer may raise a Refund Request on a Purchase, the same for every kind of Purchase: from the day of the Purchase through the fourteenth calendar day after it, with that last day included in full.
 _Avoid_: Cancellation window, cancel window
 
 **Refund Eligibility**:
-Whether a learner may raise a Refund Request on a Purchase right now. Among other conditions, the Purchase must be inside its Refund Window and must never have had a Refund Request before, and the learner must never have had a Refund on that course. A learner may always buy a course again after a Refund, but gets at most one Refund per course; a Declined Refund Request does not count toward that limit.
+Whether a buyer may raise a Refund Request on a Purchase right now. Every Purchase must be inside its Refund Window and must never have had a Refund Request before. For an Individual Purchase, among other conditions, the learner must never have had a Refund on that course: a learner may always buy a course again after a Refund, but gets at most one Refund per course, and a Declined Refund Request does not count toward that limit. For a Team Licence, the only other condition is that at least one Seat is unclaimed; a Team Licence Refund always covers all of its unclaimed Seats.
 _Avoid_: Cancellation offer, cancellable
 
 **Support Team Member**:
