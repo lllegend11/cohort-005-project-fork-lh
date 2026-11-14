@@ -41,6 +41,10 @@ interface SidebarProps {
   currentUser: CurrentUser | null;
   recentCourses?: RecentCourse[];
   isTeamAdmin?: boolean;
+  // PROTOTYPE (#7) slots for the Notification inbox variants.
+  headerSlot?: React.ReactNode;
+  navExtra?: React.ReactNode;
+  navBadges?: Record<string, number>;
 }
 
 interface NavItem {
@@ -117,6 +121,9 @@ export function Sidebar({
   currentUser,
   recentCourses = [],
   isTeamAdmin = false,
+  headerSlot,
+  navExtra,
+  navBadges = {},
 }: SidebarProps) {
   const currentUserRole = currentUser?.role ?? null;
   const [isDark, setIsDark] = useState(false);
@@ -140,6 +147,7 @@ export function Sidebar({
         <NavLink to="/" className="text-lg font-bold tracking-tight">
           Cadence
         </NavLink>
+        {headerSlot}
       </div>
 
       <nav className="flex-1 space-y-1 p-3">
@@ -160,8 +168,14 @@ export function Sidebar({
             >
               {item.icon}
               {item.label}
+              {!!navBadges[item.to] && (
+                <span className="ml-auto min-w-5 rounded-full bg-red-600 px-1.5 text-center text-xs font-semibold leading-5 text-white">
+                  {navBadges[item.to]}
+                </span>
+              )}
             </NavLink>
           ))}
+        {navExtra}
         {isTeamAdmin && (
           <NavLink
             to="/team"
