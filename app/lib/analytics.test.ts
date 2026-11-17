@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 import {
   ANALYTICS_RANGES,
   DEFAULT_ANALYTICS_RANGE,
@@ -7,6 +7,7 @@ import {
   formatBucket,
   formatMoney,
   rangeStart,
+  parseAnalyticsParams,
   parseAnalyticsRange,
   splitRevenue,
 } from "./analytics";
@@ -94,27 +95,49 @@ describe("analytics config", () => {
     });
   });
 
-  describe("rangeStart", () => {
-    beforeEach(() => {
-      vi.useFakeTimers();
-      vi.setSystemTime(new Date("2026-06-15T12:00:00.000Z"));
+  describe("parseAnalyticsParams", () => {
+    const parse = (query: string) =>
+      parseAnalyticsParams(new URLSearchParams(query));
+
+    it("reads every param the page links with", () => {
+      expect(parse("tab=course&range=7d&instructor=4&course=9")).toEqual({
+        tab: "course",
+        range: "7d",
+        requestedInstructorId: 4,
+        requestedCourseId: 9,
+      });
     });
 
-    afterEach(() => {
-      vi.useRealTimers();
+    it("falls back to the overview, the default range and no ids", () => {
+      expect(parse("")).toEqual({
+        tab: "overview",
+        range: "30d",
+        requestedInstructorId: null,
+        requestedCourseId: null,
+      });
     });
+
+    it("treats anything that isn't a positive whole number as no id", () => {
+      for (const junk of ["0", "-3", "2.5", "abc", ""]) {
+        expect(parse(`course=${junk}`).requestedCourseId).toBeNull();
+      }
+    });
+  });
+
+  describe("rangeStart", () => {
+    const now = new Date("2026-06-15T12:00:00.000Z");
 
     it("has no start at all for all time", () => {
-      expect(rangeStart("all")).toBeNull();
+      expect(rangeStart("all", now)).toBeNull();
     });
 
     it("starts each window exactly that many days back", () => {
       // Every panel on the page compares against this one boundary, so the
       // service and the question queue can't disagree about what "30 days"
       // means. Inclusive: a row stamped exactly here is inside.
-      expect(rangeStart("7d")).toBe("2026-06-08T12:00:00.000Z");
-      expect(rangeStart("30d")).toBe("2026-05-16T12:00:00.000Z");
-      expect(rangeStart("90d")).toBe("2026-03-17T12:00:00.000Z");
+      expect(rangeStart("7d", now)).toBe("2026-06-08T12:00:00.000Z");
+      expect(rangeStart("30d", now)).toBe("2026-05-16T12:00:00.000Z");
+      expect(rangeStart("90d", now)).toBe("2026-03-17T12:00:00.000Z");
     });
   });
 

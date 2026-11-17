@@ -40,15 +40,43 @@ const RANGE_DAYS: Record<Exclude<AnalyticsRange, "all">, number> = {
 };
 
 /**
- * The inclusive start of a range, as an ISO timestamp, or null for all time.
+ * The inclusive start of a range ending at `now`, as an ISO timestamp, or
+ * null for all time.
  *
  * The boundary is decided in exactly one place: a row landing exactly on the
  * cutoff is inside the range. Lives here rather than in the service because
  * panels built on other services have to agree with it.
  */
-export function rangeStart(range: AnalyticsRange): string | null {
+export function rangeStart(range: AnalyticsRange, now: Date): string | null {
   if (range === "all") return null;
-  return new Date(Date.now() - RANGE_DAYS[range] * 86_400_000).toISOString();
+  return new Date(now.getTime() - RANGE_DAYS[range] * 86_400_000).toISOString();
+}
+
+/** "course" is the second tab; anything else falls back to the overview. */
+export type AnalyticsTab = "overview" | "course";
+
+/** A search param that should be a row id, or null if it isn't one. */
+function parseId(value: string | null): number | null {
+  const id = Number(value);
+  return value !== null && Number.isInteger(id) && id > 0 ? id : null;
+}
+
+/**
+ * Everything the page reads from its URL, narrowed from untrusted strings.
+ *
+ * Parsing only — nothing here decides what the viewer is allowed to see. An
+ * instructor id or course id that comes back from here is a request, and the
+ * service checks it against the viewer.
+ */
+export function parseAnalyticsParams(params: URLSearchParams) {
+  return {
+    range: parseAnalyticsRange(params.get("range")),
+    tab: (params.get("tab") === "course"
+      ? "course"
+      : "overview") as AnalyticsTab,
+    requestedInstructorId: parseId(params.get("instructor")),
+    requestedCourseId: parseId(params.get("course")),
+  };
 }
 
 const MONTHS = [
